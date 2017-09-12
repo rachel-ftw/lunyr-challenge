@@ -4,7 +4,7 @@ pragma solidity ^0.4.9;
 contract InsecureAndMessy {
    mapping(address => uint) shares;
    address owner;
-   address[] shareholders;
+   address[] allShareholders;
    /*event FailedSend(address, uint);*/
 
    function InsecureAndMessy() {
@@ -15,22 +15,22 @@ contract InsecureAndMessy {
       shares[msg.sender] += msg.value;
    }
 
-   function addShareholder(address shareholder) {
+   function addShareholder(address newShareholder) constant {
       require(msg.sender == owner);
-      shareholders.push(shareholder);
+      allShareholders.push(newShareholder);
    }
 
    function withdraw() {
-     var share = shares[msg.sender];
+     var ownerShare = shares[msg.sender];
      shares[msg.sender] = 0;
-     msg.sender.transfer(share);                             //transfer raises an exception on failure, so can take out the else.
+     msg.sender.transfer(ownerShare);                             //transfer raises an exception on failure, so can take out the else.
    }
 
    function dispense() {
       require(msg.sender == owner);
       address shareholder;
-      for (uint i = 0; i < shareholders.length; i++) {
-         shareholder = shareholders[i];
+      for (uint i = 0; i < allShareholders.length; i++) {
+         shareholder = allShareholders[i];
          uint sh = shares[shareholder];
          shares[shareholder] = 0;
          shareholder.send(sh);
