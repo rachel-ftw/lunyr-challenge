@@ -12,10 +12,10 @@ contract SomewhatSecureAndOrganized {
   mapping(address => shareData) shares;
 
   event FailedSend(address indexed shareholder, uint sharesCount);
-  event DispensedShares(address indexed shareholder, uint shareCount)
-  event SuccessfulWithdraw(address indexed shareholder, uint shareCount)
-  event ShareholderAdded(address indexed shareholder)
-  event SharesAdded(address indexed shareholder, uint shareCount, uint shareTotal)
+  event DispensedShares(address indexed shareholder, uint shareCount);
+  event WithdrawSuccessful(address indexed shareholder, uint shareCount);
+  event AddedShareholder(address indexed shareholder);
+  event AddedShares(address indexed shareholder, uint shareCount, uint shareTotal);
 
   modifier onlyBy(address _account){
     require(msg.sender == _account);
@@ -45,7 +45,7 @@ contract SomewhatSecureAndOrganized {
   isShareholder
   {
     if(msg.value > 0) shares[msg.sender] += msg.value;
-    SharesAdded(msg.sender, msg.value, shares[msg.sender].shareCount);
+    AddedShares(msg.sender, msg.value, shares[msg.sender].shareCount);
   }
 
   function addShareholder(address newShareholder)
@@ -56,7 +56,7 @@ contract SomewhatSecureAndOrganized {
 
     shareholderList.push(newShareholder);
     shares[newShareholder].isShareholder = true;
-    ShareholderAdded(newShareholder);
+    AddedShareholder(newShareholder);
   }
 
   function withdraw()
@@ -66,7 +66,7 @@ contract SomewhatSecureAndOrganized {
     shares[msg.sender].shareCount = 0;
 
     if (msg.sender.send(currentShares)) {
-      SuccessfulWithdraw(msg.sender, currentShares);
+      WithdrawSuccessful(msg.sender, currentShares);
     } else {
       shares[msg.sender].shareCount = currentShares;
       FailedSend(msg.sender, shareCount);
@@ -77,7 +77,6 @@ contract SomewhatSecureAndOrganized {
   onlyBy(owner)
   noReentrance
   returns (bool success) {
-    success = false;
     address _shareholder;
     uint shareholderCount = shareholderList.length;
     uint successfulDispenses = 0;
