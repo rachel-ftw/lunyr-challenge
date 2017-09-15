@@ -1,14 +1,15 @@
 # Lunyr Coding Challenge
 
 Applying to the front end developer position.
-[Website](http://www.rachelralston.com)
-[UI Design Portfolio](http://www.dribbble.com/)
+
+[Personal Website](http://www.rachelralston.com)  |  [rachel@blockchaindevelopers.io](mailto:rachel@blockchaindevelopers.io)  |  [UI Design Portfolio](http://www.dribbble.com/)  |  [LinkedIn](http://www.linkedin.com)  |  [twitter](http://www.twitter.com/rachelralston)
 
 #### Process Outline
-1. Read and understand the contract. Find all plainly obvious bugs. see [insecure-firstPassNotes.sol](https://github.com/rachel-ftw/lunyr-challenge/blob/master/insecure-firstPassNotes.sol)
+1. Read and understand the contract. Find all plainly obvious bugs  ([insecure-firstPassNotes.sol](https://github.com/rachel-ftw/lunyr-challenge/blob/master/insecure-firstPassNotes.sol)).
 1. Run the contract through the [remix compiler](https://remix.ethereum.org/) and check their analysis ([remix-compiler-notes.md](https://github.com/rachel-ftw/lunyr-challenge/blob/master/remix-compiler-notes.md)). Resolve all bugs.
 1. Think through the problem: Where can you use modifiers to encapsulate code? Are you emitting events where you should be? Have you thought about as many security angles as you can?
 1. run it through the compiler again to catch any additional bugs.
+1. [final version: insecure-final.sol](https://github.com/rachel-ftw/lunyr-challenge/blob/master/insecure-final.sol)
 
 As I went back through the contract I:
 - added a struct to the shares map
