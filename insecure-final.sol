@@ -1,20 +1,21 @@
 pragma solidity ^0.4.9;
 
 // THIS CONTRACT CONTAINS BUGS - DO NOT USE
-contract SecureAndOrganized {
+contract SomewhatSecureAndOrganized {
   address owner;
+  address[] private shareholderList;
+  bool isLocked;
   struct shareData {
     uint shareCount;
     bool isShareholder;
   }
   mapping(address => shareData) shares;
-  address[] private shareholderList;
-  bool isLocked;
 
-
-
-  /*event FailedSend(address, uint);
-  event*/
+  event FailedSend(address indexed shareholder, uint sharesCount);
+  event DispensedShares(address indexed shareholder, uint shareCount)
+  event SuccessfulWithdraw(address indexed shareholder, uint shareCount)
+  event ShareholderAdded(address indexed shareholder)
+  event SharesAdded(address indexed shareholder, uint shareCount, uint shareTotal)
 
   modifier onlyBy(address _account){
     require(msg.sender == _account);
@@ -35,46 +36,73 @@ contract SecureAndOrganized {
 
   ///////////////////////////////////////////////
 
-  function SecureAndOrganized() {
+  function SomewhatSecureAndOrganized() {
     owner = msg.sender;
   }
 
   function addShares()
   payable
-  onlyBy(owner)
   isShareholder
   {
     if(msg.value > 0) shares[msg.sender] += msg.value;
+    SharesAdded(msg.sender, msg.value, shares[msg.sender].shareCount);
   }
 
   function addShareholder(address newShareholder)
   onlyBy(owner)
-  constant
-  {
+  constant {
+    require(!shares[shareholder.isShareholder]);
+    assert(0 == shares[shareholder.shareCount]);
+
     shareholderList.push(newShareholder);
+    shares[newShareholder].isShareholder = true;
+    ShareholderAdded(newShareholder);
   }
 
   function withdraw()
   onlyBy(owner)
-  {
-    var ownerShare = shares[msg.sender];
-    shares[msg.sender] = 0;
-    msg.sender.transfer(ownerShare);                             //transfer raises an exception on failure, so can take out the else.
+  noReentrance {
+    uint currentShares = shares[msg.sender].shareCount;
+    shares[msg.sender].shareCount = 0;
+
+    if (msg.sender.send(currentShares)) {
+      SuccessfulWithdraw(msg.sender, currentShares);
+    } else {
+      shares[msg.sender].shareCount = currentShares;
+      FailedSend(msg.sender, shareCount);
+    }
   }
 
   function dispense()
   onlyBy(owner)
   noReentrance
-  returns (bool success)
-  {
+  returns (bool success) {
+    success = false;
     address _shareholder;
-    for (uint i = 0; i < shareholderList.length; i++) {
-      /*if(shares[shareholderList[i]] > 0)*/
+    uint shareholderCount = shareholderList.length;
+    uint successfulDispenses = 0;
+    uint shareCount;
+    uint i
+
+    for (i = 0; i < shareholderCount; i++) {
       _shareholder = shareholderList[i];
-      uint sh = shares[_shareholder];
-      shares[_shareholder] = 0;
-      _shareholder.send(sh);
+      shareCount = shares[_shareholder].shareCount;
+
+      if (shareCount > 0) {
+        shares[_shareholder].shareCount = 0;
+
+        if(shareholder.send(shareCount)){
+          DispensedShares(shareholder, shareCount);
+          successfulDispenses++;
+        } else {
+          shares[shareholder].shareCount = shareCount;
+          FailedSend(shareholder, shareCount);
+        }
+      } else {
+        successfulDispenses++;
+      }
+      success = (successfulDispenses == shareholderCount);
+      returns success
     }
-    returns success
   }
 }
